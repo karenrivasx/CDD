@@ -1,0 +1,143 @@
+# Rivas Rios Karen Maribel - 382
+# Practica con regresion lineal simple, multiple y polinomial
+
+########## LIBRERÍAS A UTILIZAR ##########
+
+# Se importan la librerias a utilizar
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn import linear_model
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.datasets import fetch_california_housing
+
+from RegresionLineal.lineal import df
+
+############ PREPARAR LA DATA ############
+
+# Importamos los datos
+california = fetch_california_housing()
+X = pd.DataFrame(california.data, columns=california.feature_names)
+y = california.target
+
+# Entendimiento de los datos
+
+# Verifico la información contenida en el data
+print("\nInformación en el dataset:")
+print(california.keys())
+print()
+# Verifico las características en el dataset
+print("\nCaracterísticas del dataset:")
+print(california.DESCR)
+print()
+# Verifico la cantidad de datos que hay en los dataset
+print("\nCantidad de datos:")
+print(california.data.shape)
+print()
+# Verifico la información de las columnas
+print("\nNombres de las características:")
+print(california.feature_names)
+print()
+
+# REGRESIÓN LINEAL SIMPLE
+
+X_simple = X[['MedInc']].values
+X_train_simple, X_test_simple, y_train_simple, y_test_simple = train_test_split(X_simple, y, test_size=0.2)
+
+# Crear y entrenar el modelo
+model_simple = LinearRegression()
+model_simple.fit(X_train_simple, y_train_simple)
+# Realizar predicciones
+y_pred_simple = model_simple.predict(X_test_simple)
+
+# Graficamos los datos correspondientes
+plt.scatter(X_test_simple, y_test_simple)
+plt.xlabel('Ingreso Medio (MedInc)')
+plt.ylabel('Precio de la vivienda (Target)')
+plt.title('Dispersión de datos: Precio vs Ingreso Medio')
+plt.show()
+
+# Graficamos los datos junto con el modelo
+plt.scatter(X_test_simple, y_test_simple, color='blue', label='Datos reales')
+plt.plot(X_test_simple, y_pred_simple, color='red', label='Predicciones')
+plt.title('Regresión Lineal Simple: Precio Vivienda vs Ingreso Medio')
+plt.xlabel('Ingreso Medio')
+plt.ylabel('Precio de la vivienda')
+plt.show()
+
+# Evaluar el modelo
+print('Regresión Lineal Simple')
+print('Valor de la pendiente:')
+print(model_simple.coef_)
+print('Valor de la intersección:')
+print(model_simple.intercept_)
+print('La ecuación del modelo es igual a:')
+print('y = ', model_simple.coef_, 'x = ', model_simple.intercept_)
+
+print('Precisión del modelo:')
+print(model_simple.score(X_train_simple, y_train_simple))
+
+# REGRESIÓN LINEAL MÚLTIPLE
+
+# Preparar la data de regresión lineal múltiple
+X_multiple = df[california.feature_names].values
+print(X_multiple)
+# Definimos los datos correspondientes a las etiquetas
+y_multiple = df['target'].values
+# Implementación del modelo
+X_train, X_test, y_train, y_test = train_test_split(X_multiple, y_multiple, test_size=0.2)
+# Definimos el algoritmo a utilizar
+lr_multiple = linear_model.LinearRegression()
+# Entreno el modelo
+lr_multiple.fit(X_train, y_train)
+# Realizo una predicción
+Y_pred_multiple = lr_multiple.predict(X_test)
+
+# Evaluación del modelo
+print('Regresión Lineal Múltiple')
+print('Valor de la pendiente:')
+print(lr_multiple.coef_)
+print('Valor de la intersección:')
+print(lr_multiple.intercept_)
+
+print('Precisión del modelo:')
+print(lr_multiple.score(X_train, y_train))
+
+# REGRESIÓN POLINOMIAL
+
+# Preparar la data de regresión polinomial
+X_p = df[['MedInc']].values
+y_p = df['target'].values
+# Graficamos los datos correspondientes
+plt.scatter(X_p, y_p)
+plt.show()
+
+# Implementación del modelo
+X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_p, y_p, test_size=0.2)
+# Definimos el grado del polinomio
+poli_reg = PolynomialFeatures(degree=2)
+# Transformamos las características existentes en características de mayor grado
+X_train_poli = poli_reg.fit_transform(X_train_p)
+X_test_poli = poli_reg.transform(X_test_p)
+# Definimos el algoritmo a utilizar
+pr = linear_model.LinearRegression()
+# Entreno el modelo
+pr.fit(X_train_poli, y_train_p)
+# Realizo una predicción
+Y_pred_pr = pr.predict(X_test_poli)
+
+# Graficamos los datos junto con el modelo
+plt.scatter(X_test_p, y_test_p)
+plt.plot(X_test_p, Y_pred_pr, color='red', linewidth=3)
+plt.show()
+
+# Evaluación del modelo
+print('Regresión Polinomial')
+print('Valor de la pendiente:')
+print(pr.coef_)
+print('Valor de la intersección:')
+print(pr.intercept_)
+
+print('Precisión del modelo:')
+print(pr.score(X_train_poli, y_train_p))
